@@ -1,7 +1,8 @@
 //Variables
 let celsius = document.querySelector("#celcius");
 let farenheith = document.querySelector("#farenheith");
-let imageElement = document.querySelector(".card-img")
+let forecastData = document.querySelector("#forecast");
+let imageElement = document.querySelector(".card-img");
 let week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 let days = ["one","two","three","four","five","six"];
 let date = new Date(); 
@@ -17,6 +18,7 @@ let lat = 0;
 let lon = 0;
 let unit = "metric";
 let sys = ["C","km/h"];
+let dayElement =null;
 /** 
 * Alert message, with format.
 * @param {string} img - Specific string for the icon.
@@ -31,20 +33,6 @@ function sendAlert(img,time,txt){
     showConfirmButton: false,
     timer: time
   })
-}
-/** 
-* For each element of the array day searhc the following 5 days and put them in the right order.
-* @param {Int} element - get the element name of the html
-* @param {Int} index - the consecutive number for each iteration
-*/
-function setDay(element, index){
-  let dayElement = document.querySelector("#"+element); 
-  if ((date.getDay()+index+1)>=7){  
-    dayElement.innerHTML = `${week[increm]}`;
-    increm = increm+1;
-  }else{
-   dayElement.innerHTML = `${week[date.getDay()+index+1]}`; 
-  }
 }
 /** 
 * Get the hour and minutes, if minutes is <10 add a 0 to have :0x.
@@ -90,19 +78,28 @@ function getForecast(response){
   setTime();//Set current time 
   //Set maximum and minimum of the next 5 days
   for (let i=0;i<6;i++){
-   max [i] = Math.round(response.data.daily[i].temp.max);
-   min [i]= Math.round(response.data.daily[i].temp.min);
-   limits [i].innerHTML = `${max[i]}° - <span style ='font-size:13px'>${min[i]}°</span>`;
-   iconData = response.data.daily[i].weather[0].icon;
-   iconElement[i].setAttribute("src",`http://openweathermap.org/img/wn/${iconData}@2x.png`);
-   iconElement[i].setAttribute("alt",response.data.daily[i].weather[0].description);
+    if ((date.getDay()+i+1)>=7){  
+    dayElement = `${week[increm]}`;
+    increm = increm+1;
+  }else{
+     dayElement = `${week[date.getDay()+i+1]}`; 
+  }
+  max [i] = Math.round(response.data.daily[i].temp.max);
+  min [i]= Math.round(response.data.daily[i].temp.min);
+  iconData = response.data.daily[i].weather[0].icon;
+  forecastData.innerHTML += `<div class="col">
+              <h5>${dayElement}</h5>
+              <img src="http://openweathermap.org/img/wn/${iconData}@2x.png" alt="${response.data.daily[i].weather[0].description}" class="icon">
+              <h6 class="lim">${max[i]}°-
+                <small>${min[i]}°</small>
+              </h6>
+            </div>`
   }  
   //Replace values in html
   pressure.innerHTML = `${presData} hPa`;
   windSpeed.innerHTML = `${windData} ${sys[1]}`;
   uvIndex.innerHTML = Math.round(uviData);
   humidity.innerHTML = `${humiData}%`;
-  days.forEach(setDay);
 }
 /** 
 * Get the image Url from the api and replace the html element.
