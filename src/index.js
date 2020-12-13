@@ -4,7 +4,6 @@ let farenheith = document.querySelector("#farenheith");
 let forecastData = document.querySelector("#forecast");
 let imageElement = document.querySelector(".card-img");
 let week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-let days = ["one","two","three","four","five","six"];
 let date = new Date(); 
 let tzData = ""; 
 let increm = 0;
@@ -60,7 +59,7 @@ function getForecast(response){
   let uvIndex = document.querySelector("#uvi");
   let humidity = document.querySelector("#humidity");
   let limits = document.querySelectorAll(".lim");
-  let iconElement = document.querySelectorAll(".icon");
+  forecastData.innerHTML = null;
  // Vars for the api data
   let presData = response.data.current.pressure;
   let windData = response.data.current.wind_speed;
